@@ -1,0 +1,1321 @@
+{
+	"info": {
+		"_postman_id": "e5858a71-caa7-4d33-901a-85383e2d9d16",
+		"name": "04_SegundaMano",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "01 Validation Failed",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8011ced2-88fb-4404-b424-d3f070135c14",
+						"exec": [
+							"/* TESTCASES TO EXECUTE */",
+							"/* */",
+							" pm.test(\"Test - Validar status 400\", function () { ",
+							"     pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Test - Body matchs string\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"error\");",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"pm.test(\"Test - Check error message is present\", function () {",
+							"    console.log(jsonData.error.code);",
+							"    pm.expect(jsonData.error.code).equal(\"VALIDATION_FAILED\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://{{base_url}}/nga/api/v1.1/private/accounts?lang=es",
+					"protocol": "https",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"nga",
+						"api",
+						"v1.1",
+						"private",
+						"accounts"
+					],
+					"query": [
+						{
+							"key": "lang",
+							"value": "es"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "02 Crear Usuario",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "803e7f81-624e-4546-9a92-e0059c97e08f",
+						"exec": [
+							"/* TESTCASES TO EXECUTE */",
+							"/* */",
+							" pm.test(\"Test - Validar status 201 \", function () { ",
+							"     pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Test - Response time is less than 5 second\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"pm.test(\"Test - Validar la presencia de Token en la respuesta\", function () {",
+							"    pm.expect(jsonData.access_token).to.be.not.empty;",
+							"});",
+							"",
+							"pm.test(\"Test - Account Id is populated\", function () {",
+							"    pm.expect(jsonData.account.account_id).to.be.not.empty;",
+							"});",
+							"",
+							"pm.test(\"Test - UUID is populated\", function () {",
+							"    pm.expect(jsonData.account.uuid).to.be.not.empty;",
+							"});",
+							"",
+							"",
+							"/* GETTING AND STORING VALUES */",
+							"/* */",
+							"//Obtain and store the access_token",
+							"var accesstoken  = jsonData.access_token;",
+							"console.log(\"Access token: \" + accesstoken);",
+							"//Saving Access token to Environment Variables",
+							"pm.environment.set('access_token', accesstoken);",
+							"",
+							"//Obtain and store the Acccount ID",
+							"var Acct_Id = jsonData.account.account_id;",
+							"var Account_ID = Acct_Id.split(\"/\").pop();",
+							"console.log(\"Account_ID: \" + Account_ID);",
+							"//Saving Account Id to Environment Variables",
+							"pm.environment.set('account_id', Account_ID);",
+							"",
+							"//Obtain and store the access_token",
+							"var name_1  = jsonData.account.name;",
+							"console.log(\"Name: \" + name_1);",
+							"//Saving Access token to Environment Variables",
+							"pm.environment.set('name', name_1);",
+							"",
+							"//Obtain and store the UUID",
+							"var UUID = jsonData.account.uuid;",
+							"console.log(\"UUID: \" + UUID);",
+							"//Saving UUID to Environment Variables",
+							"pm.environment.set('uuid', UUID);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "1b0c1001-da84-4a27-a4d7-3ff245d502da",
+						"exec": [
+							"//Creating a random username",
+							"let usuario = \"usuario\" + (Math.floor(Math.random() * 7685) + 3) + \"@viajes.com\";",
+							"",
+							"//Creating a random password of at least 5 characters",
+							"let password = (Math.floor(Math.random() * 57684) + 10000);",
+							"",
+							"",
+							"//let encodedKeys = CryptoJS.enc.Base64.stringify(CryptoJS.ec.Utf8.parse(usuario + \":\" + password));",
+							"var preencode = (usuario + \":\" + password);",
+							"var encodedKeys = btoa(preencode);",
+							"",
+							"console.log(\"User: \" + usuario + \"  Password: \" + password);",
+							"console.log(\"Pre-Encode: \" + preencode);",
+							"console.log(\"Encoded: \" + encodedKeys);",
+							"",
+							"//Saving encodeKeys and mail to environment variables",
+							"pm.environment.set(\"enconded\",encodedKeys);",
+							"pm.environment.set(\"mail\",usuario);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Basic {{enconded}}"
+					},
+					{
+						"key": "Origin",
+						"value": "https://www.segundamano.com",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json, text/plain,*.*",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"account\":\n\t{\n\t\t\"email\":\"{{mail}}\"\n\t}\n}"
+				},
+				"url": {
+					"raw": "https://{{base_url}}/nga/api/v1.1/private/accounts",
+					"protocol": "https",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"nga",
+						"api",
+						"v1.1",
+						"private",
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "03 Actualizar Usuario - Nombre y Telefono",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "9f431e4a-e51b-4ad0-8678-c11c8ca9ffd7",
+						"exec": [
+							"//Creating a random Name",
+							"let name_2 = pm.environment.get('name');",
+							"let nombrecompleto = name_2 + \" \" + Math.random().toString(36).substring(2,15) + \" \" + Math.random().toString(36).substring(2,15);",
+							"",
+							"//Creating a random Phone number",
+							"let phone = (_.random(1111111111,9999999999));",
+							"",
+							"//Saving the Random Name in a environment variable",
+							"pm.environment.set(\"full_name\",nombrecompleto);",
+							"//pm.environment.set(\"phone\",(_.random(1111111111,9999999999)));",
+							"pm.environment.set(\"phone\",phone);",
+							"",
+							"console.log(\"Name Completo: \", nombrecompleto);",
+							"console.log(\"Phone: \", phone);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "a7f792c2-b05c-40c6-94dc-ea77fc87dc68",
+						"exec": [
+							"/* TESTCASES TO EXECUTE */",
+							"/* */",
+							"pm.test(\"Test - Validar status 200 \", function () { ",
+							"     pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Test - La respuesta regresa un body\", function () { ",
+							"     pm.response.to.be.withBody;",
+							"});",
+							"",
+							"pm.test(\"Test - La respuesta es un JSON valido\", function () { ",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Test - Response time is less than 5 second\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"pm.test(\"Test - UUID is populated\", function () {",
+							"    pm.expect(jsonData.account.uuid).to.be.not.empty;",
+							"});",
+							"",
+							"pm.test(\"Test - UUID is equal to stored\", function () {",
+							"    var envUUID = pm.environment.get('uuid');",
+							"    pm.expect(jsonData.account.uuid).to.be.equal(envUUID);",
+							"});",
+							"",
+							"",
+							"/* GETTING AND STORING VALUES */",
+							"/* */"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json, text/plain, */*"
+					},
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "tag:scmcoord.com,2013:api {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"account\":\n\t{\n\t\t\"name\":\"{{full_name}}\",\n\t\t\"phone\":\"{{phone}}\",\n\t\t\"phone_hidden\":false\n\t}\n}"
+				},
+				"url": {
+					"raw": "https://{{base_url}}/nga/api/v1/private/accounts/{{account_id}}?lang=es",
+					"protocol": "https",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"nga",
+						"api",
+						"v1",
+						"private",
+						"accounts",
+						"{{account_id}}"
+					],
+					"query": [
+						{
+							"key": "lang",
+							"value": "es"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "04 Crear Anuncio Utensilios",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f51dd1a2-77c5-4584-b249-f1a91d351ec3",
+						"exec": [
+							"/* TESTCASES TO EXECUTE */",
+							"/* */",
+							"pm.test(\"Test - Validar status 201 \", function () { ",
+							"     pm.response.to.have.status(201); //Pass when New Element",
+							"});",
+							"",
+							"pm.test(\"Test - La respuesta regresa un body\", function () { ",
+							"     pm.response.to.be.withBody;",
+							"});",
+							"",
+							"pm.test(\"Test - La respuesta es un JSON valido\", function () { ",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Test - Response time is less than 5 second\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"pm.test(\"Test - Action_Type is 'new'\", function () {",
+							"    console.log(\"Action_Type: \" + jsonData.action.action_type);",
+							"    pm.expect(jsonData.action.action_type).to.be.equal(\"new\");",
+							"});",
+							"",
+							"pm.test(\"Test - Ad_Id is populated\", function () {",
+							"    console.log(\"Ad_Id: \" + jsonData.ad.ad_id);",
+							"    pm.expect(jsonData.ad.ad_id).to.be.not.empty;",
+							"});",
+							"",
+							"",
+							"/* GETTING AND STORING VALUES */",
+							"/* */",
+							"//Getting the publication ID",
+							"var Ad_Id = jsonData.ad.ad_id;",
+							"//var Publication_ID = Ad_Id.substring(Ad_Id.length, Ad_Id.length-8);",
+							"var Publication_ID = Ad_Id.split(\"/\").pop();",
+							"//Saving publication ID to Environment Variables",
+							"pm.environment.set('publication_id', Publication_ID);",
+							"",
+							"console.log(\"Publication ID: \" + Publication_ID);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "7e98bae8-29ba-498f-8654-700889df231c",
+						"exec": [
+							"//Creating a Random Text for the Ad",
+							"let texto = Math.random().toString(36).substring(2,15) + \" \" + Math.random().toString(36).substring(2,15);",
+							"",
+							"//Saving the text in a environment variable",
+							"pm.environment.set(\"texto\", texto);",
+							"//pm.setEnvironmentVariable(\"texto\", texto);",
+							"//ambas estructuras de arriba hacen lo mismo",
+							"",
+							"console.log(\"Texto Anuncio\", texto);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json, text/plain, */*",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "tag:scmcoord.com,2013:api {{access_token}}"
+					},
+					{
+						"key": "x-nga-source",
+						"value": "PHOENIX_DESKTOP",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"ad\":\r\n\t{\r\n\t\t\"locations\":\r\n\t\t[\r\n\t\t\t{\r\n\t\t\t\t\"code\":\"11\",\r\n\t\t\t\t\"key\":\"region\",\r\n\t\t\t\t\"label\":\"Ciudad de Mexicos\",\r\n\t\t\t\t\"locations\":\r\n\t\t\t\t[\r\n\t\t\t\t\t{\r\n\t\t\t\t\t\t\"code\":\"296\",\r\n\t\t\t\t\t\t\"key\":\"municipality\",\r\n\t\t\t\t\t\t\"label\":\"Gustavo A. Madero\",\r\n\t\t\t\t\t\t\"locations\":\r\n\t\t\t\t\t\t[\r\n\t\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\t\t\"code\":\"7719\",\r\n\t\t\t\t\t\t\t\t\"key\":\"area\",\r\n\t\t\t\t\t\t\t\t\"label\":\"Cocoyotes\"\r\n\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t]\r\n\t\t\t\t\t}\r\n\t\t\t\t]\r\n\t\t\t}\r\n\t\t],\r\n\t\t\"subject\":\"Juego de Cucharones\",\r\n\t\t\"body\":\"Hermoso set de chucaharones hechos de {{texto}} , te los llevamos hasta la puerta de casa\",\r\n\t\t\"category\":\r\n\t\t{\r\n\t\t\t\"code\":\"3042\"\r\n\t\t},\r\n\t\t\"images\":[],\r\n\t\t\"price\":\r\n\t\t{\r\n\t\t\t\"currency\":\"mxn\",\r\n\t\t\t\"price_value\":1\r\n\t\t},\r\n\t\t\"ad_details\":{},\r\n\t\t\"phone_hidden\":1,\r\n\t\t\"plate\":\"\",\r\n\t\t\"vin\":\"\",\r\n\t\t\"type\":\r\n\t\t{\r\n\t\t\t\"code\":\"s\",\r\n\t\t\t\"label\":\"\"\r\n\t\t},\r\n\t\t\"ad\":\"Juego de Cucharones\"\r\n\t},\r\n\t\"category_suggestion\":false,\r\n\t\"commit\":true\r\n}"
+				},
+				"url": {
+					"raw": "https://{{base_url}}/nga/api/v1.7/private/accounts/{{account_id}}/klfst?lang=es",
+					"protocol": "https",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"nga",
+						"api",
+						"v1.7",
+						"private",
+						"accounts",
+						"{{account_id}}",
+						"klfst"
+					],
+					"query": [
+						{
+							"key": "lang",
+							"value": "es"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "05 Metodos de Pago",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ca2827d5-e26f-44e2-a23e-e3fd45f1be55",
+						"exec": [
+							"/* TESTCASES TO EXECUTE */",
+							"/* */",
+							"pm.test(\"Test - Validar status 200 \", function () { ",
+							"     pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Test - La respuesta regresa un body\", function () { ",
+							"     pm.response.to.be.withBody;",
+							"});",
+							"",
+							"pm.test(\"Test - La respuesta es un JSON valido\", function () { ",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Test - Response time is less than 5 second\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+							"});",
+							"",
+							"var jsonData = JSON.parse(responseBody);",
+							"console.log(jsonData);",
+							"console.log(jsonData.payment_methods[0]);",
+							"console.log(jsonData.payment_methods[0].applies_to[0]);",
+							"",
+							"/* GETTING AND STORING VALUES */",
+							"/* */"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://{{base_url}}/nga/api/v1/public/payments/methods?lang=es",
+					"protocol": "https",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"nga",
+						"api",
+						"v1",
+						"public",
+						"payments",
+						"methods"
+					],
+					"query": [
+						{
+							"key": "lang",
+							"value": "es"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "06 Actualizar Anuncio Utensilios",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e192bac5-f5e8-456b-88d7-1e5c49370a40",
+						"exec": [
+							"/* TESTCASES TO EXECUTE */",
+							"/* */",
+							"pm.test(\"Test - Validar status 201 \", function () { ",
+							"     pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Test - La respuesta regresa un body\", function () { ",
+							"     pm.response.to.be.withBody;",
+							"});",
+							"",
+							"pm.test(\"Test - La respuesta es un JSON valido\", function () { ",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Test - Response time is less than 5 second\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"pm.test(\"Test - Action_Type is 'edit'\", function () {",
+							"    console.log(\"Action_Type: \" + jsonData.action.action_type);",
+							"    pm.expect(jsonData.action.action_type).to.be.equal(\"edit\");",
+							"});",
+							"",
+							"pm.test(\"Test - Action_Type is not 'new'\", function () {",
+							"    console.log(\"Action_Type: \" + jsonData.action.action_type);",
+							"    pm.expect(jsonData.action.action_type).to.not.be.equal(\"new\");",
+							"});",
+							"",
+							"pm.test(\"Test - Ad_Id is populated\", function () {",
+							"    console.log(\"Ad_Id: \" + jsonData.ad.ad_id);",
+							"    pm.expect(jsonData.ad.ad_id).to.be.not.empty;",
+							"});",
+							"",
+							"pm.test(\"Test - Ad_Id is equal to stored\", function () {",
+							"    var envpublication_id = pm.environment.get('publication_id');",
+							"    var Ad_Id = jsonData.ad.ad_id;",
+							"    var bodyad_id = Ad_Id.split(\"/\").pop();",
+							"    pm.expect(bodyad_id).to.be.equal(envpublication_id);",
+							"});",
+							"",
+							"",
+							"/* GETTING AND STORING VALUES */",
+							"/* */"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "10655bb4-8f4b-412b-bb53-b7bca137e526",
+						"exec": [
+							"//Creating a Random Text for the Ad",
+							"let nuevo_texto = Math.random().toString(36).substring(2,15) + \" \" + Math.random().toString(36).substring(2,15);",
+							"",
+							"//Saving the text in a environment variable",
+							"pm.environment.set(\"nuevo_texto\", nuevo_texto);",
+							"//pm.setEnvironmentVariable(\"texto\", texto);",
+							"//ambas estructuras de arriba hacen lo mismo",
+							"",
+							"console.log(\"Nuevo Texto Anuncio\", nuevo_texto);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json, text/plain, */*"
+					},
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "tag:scmcoord.com,2013:api {{access_token}}"
+					},
+					{
+						"key": "x-nga-source",
+						"type": "text",
+						"value": "PHOENIX_DESKTOP"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"ad\":\r\n\t{\r\n\t\t\"locations\":\r\n\t\t[\r\n\t\t\t{\r\n\t\t\t\t\"code\":\"11\",\r\n\t\t\t\t\"key\":\"region\",\r\n\t\t\t\t\"label\":\"Ciudad de Mexicos\",\r\n\t\t\t\t\"locations\":\r\n\t\t\t\t[\r\n\t\t\t\t\t{\r\n\t\t\t\t\t\t\"code\":\"296\",\r\n\t\t\t\t\t\t\"key\":\"municipality\",\r\n\t\t\t\t\t\t\"label\":\"Gustavo A. Madero\",\r\n\t\t\t\t\t\t\"locations\":\r\n\t\t\t\t\t\t[\r\n\t\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\t\t\"code\":\"7719\",\r\n\t\t\t\t\t\t\t\t\"key\":\"area\",\r\n\t\t\t\t\t\t\t\t\"label\":\"Cocoyotes\"\r\n\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t]\r\n\t\t\t\t\t}\r\n\t\t\t\t]\r\n\t\t\t}\r\n\t\t],\r\n\t\t\"subject\":\"Juego de Cucharones\",\r\n\t\t\"body\":\"Set de Chucarones de {{nuevo_texto}}, te los llevamos hasta la puerta de casa\",\r\n\t\t\"category\":\r\n\t\t{\r\n\t\t\t\"code\":\"4022\"\r\n\t\t},\r\n\t\t\"images\":[],\r\n\t\t\"price\":\r\n\t\t{\r\n\t\t\t\"currency\":\"mxn\",\r\n\t\t\t\"price_value\":1\r\n\t\t},\r\n\t\t\"ad_details\":{},\r\n\t\t\"phone_hidden\":1,\r\n\t\t\"plate\":\"\",\r\n\t\t\"vin\":\"\",\r\n\t\t\"type\":\r\n\t\t{\r\n\t\t\t\"code\":\"s\",\r\n\t\t\t\"label\":\"\"\r\n\t\t},\r\n\t\t\"ad\":\"Juego de Cucharones\"\r\n\t},\r\n\t\"category_suggestion\":false,\r\n\t\"commit\":true\r\n}"
+				},
+				"url": {
+					"raw": "https://{{base_url}}/nga/api/v1.7/private/accounts/{{account_id}}/klfst/{{publication_id}}/actions?lang=es",
+					"protocol": "https",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"nga",
+						"api",
+						"v1.7",
+						"private",
+						"accounts",
+						"{{account_id}}",
+						"klfst",
+						"{{publication_id}}",
+						"actions"
+					],
+					"query": [
+						{
+							"key": "lang",
+							"value": "es"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "07 Listar Categorias",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "53810ccb-6e7e-4531-b5a9-c3a57e9674a8",
+						"exec": [
+							"/* TESTCASES TO EXECUTE */",
+							"/* */",
+							"pm.test(\"Test - Validar status 200\", function () { ",
+							"     pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"/* GETTING AND STORING VALUES */",
+							"/* */"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://{{base_url}}/nga/api/v1/public/categories/insert?lang=es",
+					"protocol": "https",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"nga",
+						"api",
+						"v1",
+						"public",
+						"categories",
+						"insert"
+					],
+					"query": [
+						{
+							"key": "lang",
+							"value": "es"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "08 Verificar direccion esta vacio",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a7f09eee-f2e6-496f-a5b2-f2df5c5043eb",
+						"exec": [
+							"/* TESTCASES TO EXECUTE */",
+							"/* */",
+							"pm.test(\"Test - Validar status 200\", function () { ",
+							"     pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Test - La respuesta regresa un body\", function () { ",
+							"     pm.response.to.be.withBody;",
+							"});",
+							"",
+							"pm.test(\"Test - La respuesta es un JSON valido\", function () { ",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Test - Response time is less than 5 second\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"pm.test(\"Test - Account Address is not populated\", function () {",
+							"    pm.expect(jsonData.addresses).to.be.empty;",
+							"});",
+							"",
+							"/* GETTING AND STORING VALUES */",
+							"/* */"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "d4ad8b17-bb53-4ced-aa80-7f1dffb174d1",
+						"exec": [
+							"let token = pm.environment.get('access_token');",
+							"let uuid = pm.environment.get('uuid');",
+							"",
+							"var preencode = (uuid + \":\" + token);",
+							"var encodedKeys = btoa(preencode);",
+							"//let encodedKeys = CryptoJS.enc.Base64.stringify(CryptoJS.ec.Uft8.parse(usuario + \":\" + password));",
+							"",
+							"console.log(\"Access token: \" + token + \" UUID: \" + uuid);",
+							"console.log(\"Pre-Encode: \" + preencode);",
+							"console.log(\"Encoded: \" + encodedKeys);",
+							"",
+							"//Saving encodeKeys and mail to environment variables",
+							"pm.environment.set(\"long_token\",encodedKeys);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic {{long_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://{{base_url}}/addresses/v1/get",
+					"protocol": "https",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"addresses",
+						"v1",
+						"get"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "09 Actualizar Usuario - Ubicacion Perfil",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "f49a8d65-747d-4c27-b30b-d0f8cff618d1",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "eeb4f767-c643-4c26-b925-3260f1383583",
+						"exec": [
+							"/* TESTCASES TO EXECUTE */",
+							"/* */",
+							"pm.test(\"Test - Validar status 200 \", function () { ",
+							"     pm.response.to.have.status(200); //Pass when New Element",
+							"});",
+							"",
+							"pm.test(\"Test - La respuesta regresa un body\", function () { ",
+							"     pm.response.to.be.withBody;",
+							"});",
+							"",
+							"pm.test(\"Test - La respuesta es un JSON valido\", function () { ",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Test - Response time is less than 5 second\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"pm.test(\"Test - UUID is populated\", function () {",
+							"    pm.expect(jsonData.account.uuid).to.be.not.empty;",
+							"});",
+							"",
+							"pm.test(\"Test - UUID is equal to stored\", function () {",
+							"    var envUUID = pm.environment.get('uuid');",
+							"    pm.expect(jsonData.account.uuid).to.be.equal(envUUID);",
+							"});",
+							"",
+							"",
+							"/* GETTING AND STORING VALUES */",
+							"/* */"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json, text/plain, */*"
+					},
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "tag:scmcoord.com,2013:api {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"account\":\n\t{\n\t\t\"name\":\"{{full_name}}\",\n\t\t\"phone\":\"{{phone}}\",\n\t\t\"locations\":\n\t\t[\n\t\t\t{\n\t\t\t\t\"code\":\"9\",\n\t\t\t\t\"key\":\"region\",\n\t\t\t\t\"label\":\"Chiapas\",\n\t\t\t\t\"locations\":\n\t\t\t\t[\n\t\t\t\t\t{\n\t\t\t\t\t\t\"code\":\"211\",\n\t\t\t\t\t\t\"key\":\"municipality\",\n\t\t\t\t\t\t\"label\":\"Tuxtla Gutiérrez\"\n\t\t\t\t\t}\n\t\t\t\t]\n\t\t\t}\n\t\t],\n\t\t\"professional\":false,\n\t\t\"phone_hidden\":false\n\t}\n}"
+				},
+				"url": {
+					"raw": "https://{{base_url}}/nga/api/v1/private/accounts/{{account_id}}?lang=es",
+					"protocol": "https",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"nga",
+						"api",
+						"v1",
+						"private",
+						"accounts",
+						"{{account_id}}"
+					],
+					"query": [
+						{
+							"key": "lang",
+							"value": "es"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "10 Agregar Mis  Direcciones 1 (error)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "7d1effe4-5275-438e-8b84-b6ea737596bd",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "e4fe5b63-58cd-4ed1-8752-c920c499c9a0",
+						"exec": [
+							"/* TESTCASES TO EXECUTE */",
+							"/* */",
+							"pm.test(\"Test - Validar status 400\", function () { ",
+							"     pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Test - La respuesta regresa un body\", function () { ",
+							"     pm.response.to.be.withBody;",
+							"});",
+							"",
+							"pm.test(\"Test - La respuesta es un JSON valido\", function () { ",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"pm.test(\"Test - Check error message is present\", function () {",
+							"    pm.expect(jsonData.error).equal(\"Error creating Address: name must have at least two words\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Basic {{long_token}}"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "contact",
+							"value": "Abue",
+							"type": "text"
+						},
+						{
+							"key": "phone",
+							"value": "8888888888",
+							"type": "text"
+						},
+						{
+							"key": "zipCode",
+							"value": "486520",
+							"type": "text"
+						},
+						{
+							"key": "exteriorInfo",
+							"value": "Isla Martinica 1313",
+							"type": "text"
+						},
+						{
+							"key": "region",
+							"value": "11",
+							"type": "text"
+						},
+						{
+							"key": "municipality",
+							"value": "296",
+							"type": "text"
+						},
+						{
+							"key": "alias",
+							"value": "Casa Abue",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://{{base_url}}/addresses/v1/create",
+					"protocol": "https",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"addresses",
+						"v1",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "11 Agregar Mis  Direcciones 2",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "41ec4d0b-c0c7-4ee9-904e-761f06728c4a",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "c924be39-52e3-4f5d-a9bc-499790529438",
+						"exec": [
+							"/* TESTCASES TO EXECUTE */",
+							"/* */",
+							"pm.test(\"Test - Validar status 201\", function () { ",
+							"     pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Test - La respuesta regresa un body\", function () { ",
+							"     pm.response.to.be.withBody;",
+							"});",
+							"",
+							"pm.test(\"Test - La respuesta es un JSON valido\", function () { ",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"pm.test(\"Test - Check addressID is not empty\", function () {",
+							"    pm.expect(jsonData.addressID).to.not.be.empty;",
+							"});",
+							"",
+							"",
+							"/* GETTING AND STORING VALUES */",
+							"/* */",
+							"//Obtain and store the address IDn",
+							"var address_ID  = jsonData.addressID;",
+							"console.log(\"Address ID: \" + address_ID);",
+							"//Saving Access token to Environment Variables",
+							"pm.environment.set('addressID', address_ID);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic {{long_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "contact",
+							"value": "Casa Grande",
+							"type": "text"
+						},
+						{
+							"key": "phone",
+							"value": "6556654455",
+							"type": "text"
+						},
+						{
+							"key": "frc",
+							"value": "case990102",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "zipCode",
+							"value": "98101",
+							"type": "text"
+						},
+						{
+							"key": "exteriorInfo",
+							"value": "Lopez Mateos 4213",
+							"type": "text"
+						},
+						{
+							"key": "region",
+							"value": "11",
+							"type": "text"
+						},
+						{
+							"key": "municipality",
+							"value": "296",
+							"type": "text"
+						},
+						{
+							"key": "alias",
+							"value": "Casa Grande",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://{{base_url}}/addresses/v1/create",
+					"protocol": "https",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"addresses",
+						"v1",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "12 Validar Direccion creada",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b47b4a46-2ce4-4c27-bd07-356141d39e84",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "f5b0f066-3404-40bf-a6ce-1b5c2cab7f89",
+						"exec": [
+							"/* TESTCASES TO EXECUTE */",
+							"/* */",
+							"pm.test(\"Test - Validar status 200\", function () { ",
+							"     pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Test - La respuesta regresa un body\", function () { ",
+							"     pm.response.to.be.withBody;",
+							"});",
+							"",
+							"pm.test(\"Test - La respuesta es un JSON valido\", function () { ",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"",
+							"/* GETTING AND STORING VALUES */",
+							"/* */"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Basic {{long_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://{{base_url}}/addresses/v1/get",
+					"protocol": "https",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"addresses",
+						"v1",
+						"get"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "13 Razones de Borrado - TimeOut",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "211204a0-7ba4-4ac6-afb3-1b9656f3aa44",
+						"exec": [
+							"pm.test(\"Validar - Prueba con Timeout\", function (done){",
+							"   setTimeout(() =>{",
+							"       pm.expect(pm.response.code).to.equal(200);",
+							"       done();",
+							"   }, 3000)  ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://{{base_url}}/nga/api/v1.1/public/delete_reasons?lang=es",
+					"protocol": "https",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"nga",
+						"api",
+						"v1.1",
+						"public",
+						"delete_reasons"
+					],
+					"query": [
+						{
+							"key": "lang",
+							"value": "es"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "14 Borrar Anuncio",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "c4b2c58e-eb06-459e-946f-2c49f4953dc7",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "c3a04240-1e01-4b41-849a-59ee57b36931",
+						"exec": [
+							"/* TESTCASES TO EXECUTE */",
+							"/* */",
+							"pm.test(\"Test - Validar status 200 \", function () { ",
+							"     pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Test - La respuesta regresa un body\", function () { ",
+							"     pm.response.to.be.withBody;",
+							"});",
+							"",
+							"pm.test(\"Test - La respuesta es un JSON valido\", function () { ",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 5 second\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"pm.test(\"Test - Action_Type is 'delete'\", function () {",
+							"    console.log(\"Action_Type: \" + jsonData.action.action_type);",
+							"    pm.expect(jsonData.action.action_type).to.be.equal(\"delete\");",
+							"});",
+							"pm.test(\"Test - Action_Type is not 'edit'\", function () {",
+							"    console.log(\"Action_Type: \" + jsonData.action.action_type);",
+							"    pm.expect(jsonData.action.action_type).to.not.be.equal(\"edit\");",
+							"});",
+							"",
+							"pm.test(\"Test - Action_Type is not 'new'\", function () {",
+							"    console.log(\"Action_Type: \" + jsonData.action.action_type);",
+							"    pm.expect(jsonData.action.action_type).to.not.be.equal(\"new\");",
+							"});",
+							"",
+							"//\"code\": \"0\" //\"No lo vendí\"",
+							"//\"code\": \"1\" //\"Vendí gracias a Segundamano\"",
+							"//\"code\": \"2\" //\"Vendí gracias a otro sitio/app\"",
+							"//\"code\": \"5\" //\"Otra razón\"",
+							"",
+							"",
+							"",
+							"/* GETTING AND STORING VALUES */",
+							"/* */"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json, text/plain, */*\"",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "tag:scmcoord.com,2013:api {{access_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"delete_reason\": {\n\t\t\"code\": \"0\"\n\t}\n}"
+				},
+				"url": {
+					"raw": "https://{{base_url}}/nga/api/v1/private/accounts/{{account_id}}/klfst/{{publication_id}}",
+					"protocol": "https",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"nga",
+						"api",
+						"v1",
+						"private",
+						"accounts",
+						"{{account_id}}",
+						"klfst",
+						"{{publication_id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
