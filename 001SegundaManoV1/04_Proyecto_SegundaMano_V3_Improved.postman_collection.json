@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "7163537e-a8c4-492b-a5af-35db6d7c6b5e",
+		"_postman_id": "4cb6adb4-ef00-41d8-bcdd-e0faf301a8f9",
 		"name": "04 Proyecto SegundaMano V3 Improved",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -11,12 +11,12 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "03c68602-eecb-4290-be88-bf6a3a961697",
+						"id": "fffa51f9-2246-4823-ab24-67f04f7bc34a",
 						"exec": [
 							"/* TESTCASES TO EXECUTE */",
 							"/* */",
-							" pm.test(\"Test - Validar status 201 \", function () { ",
-							"     pm.response.to.have.status(201);",
+							"pm.test(\"Test - Validar status 201 \", function () {",
+							"    pm.response.to.have.status(201);",
 							"});",
 							"",
 							"pm.test(\"Test - Response time is less than 5 second\", function () {",
@@ -36,11 +36,16 @@
 							"    pm.expect(jsonData.account.uuid).to.be.not.empty;",
 							"});",
 							"",
+							"//New Test Added by Liliana G. ",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
 							"",
 							"/* GETTING AND STORING VALUES */",
 							"/* */",
 							"//Obtain and store the access_token",
-							"var accesstoken  = jsonData.access_token;",
+							"var accesstoken = jsonData.access_token;",
 							"console.log(\"Access token: \" + accesstoken);",
 							"//Saving Access token to Environment Variables",
 							"pm.environment.set('access_token', accesstoken);",
@@ -53,7 +58,7 @@
 							"pm.environment.set('account_id', Account_ID);",
 							"",
 							"//Obtain and store the access_token",
-							"var name_1  = jsonData.account.name;",
+							"var name_1 = jsonData.account.name;",
 							"console.log(\"Name: \" + name_1);",
 							"//Saving Access token to Environment Variables",
 							"pm.environment.set('name', name_1);",
@@ -70,7 +75,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "93e66749-52f2-46af-9087-257cefb41523",
+						"id": "64474796-385a-4f2c-b4b3-62c086faba6b",
 						"exec": [
 							"//CReating a random username",
 							"let usuario = \"usuario\" + (Math.floor(Math.random() * 7685) + 3) + \"@viajes.com\";",
@@ -146,7 +151,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "446af7cb-1f26-4d9d-93ea-14e11d51ec5f",
+						"id": "91ef6830-db09-4f96-a442-a2090e6000ec",
 						"exec": [
 							"//Creating a random Name",
 							"let name_2 = pm.environment.get('name');",
@@ -169,7 +174,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "47340ffc-5045-4a8b-aab0-552b64b0ef2c",
+						"id": "d65b149b-8bb2-4220-a9ad-10b8aaded906",
 						"exec": [
 							"/* TESTCASES TO EXECUTE */",
 							"/* */",
@@ -263,7 +268,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "5baa74b5-e72a-4f59-9c57-0dedf0164e66",
+						"id": "ef1197d0-4dfc-4ef9-ac76-ca4850499dad",
 						"exec": [
 							"/* TESTCASES TO EXECUTE */",
 							"/* */",
@@ -312,7 +317,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "c1957a8d-99c2-48fc-bf9a-516ec1fe97cb",
+						"id": "776971cf-3d7b-4747-af6e-29e12bda1be4",
 						"exec": [
 							"//Creating a Random Text for the Ad",
 							"let texto = Math.random().toString(36).substring(2,15) + \" \" + Math.random().toString(36).substring(2,15);",
@@ -387,7 +392,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "441fd9e0-5082-40c8-b90c-7355ffc718f5",
+						"id": "294e1325-77e1-463c-b4ba-57e85f2b7188",
 						"exec": [
 							"/* TESTCASES TO EXECUTE */",
 							"/* */",
@@ -452,7 +457,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "d278fdac-01b2-4bfd-b4d4-1e26d2c8d4f3",
+						"id": "d73d6f94-2299-4e97-99c5-0ebdc683dfeb",
 						"exec": [
 							"/* TESTCASES TO EXECUTE */",
 							"/* */",
@@ -505,7 +510,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "6ec25304-7878-4e83-ad27-a5c08cbc54c7",
+						"id": "13f9976c-b3e9-469d-9b3c-65d77f41c122",
 						"exec": [
 							"//Creating a Random Text for the Ad",
 							"let nuevo_texto = Math.random().toString(36).substring(2,15) + \" \" + Math.random().toString(36).substring(2,15);",
@@ -582,7 +587,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "9e5da5b2-b341-434d-b822-2ba0293aadff",
+						"id": "2b269d8f-0de6-45ed-b3bb-3d2d11c09fa2",
 						"exec": [
 							"/* TESTCASES TO EXECUTE */",
 							"/* */",
@@ -628,7 +633,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "85d88c86-3c25-4db9-88bb-0cb0fbe54b58",
+						"id": "f42e9027-8f58-4c4a-a89c-9d1db69bab11",
 						"exec": [
 							"/* TESTCASES TO EXECUTE */",
 							"/* */",
@@ -662,7 +667,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "72e584fa-1087-462b-bd1e-121d8360f7df",
+						"id": "fa0cbe0c-e0d7-4d10-90c3-fda394c50116",
 						"exec": [
 							"let token = pm.environment.get('access_token');",
 							"let uuid = pm.environment.get('uuid');",
@@ -712,7 +717,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "571bf414-d24e-4196-b4f0-01fd365fc4d3",
+						"id": "ab53d1f4-03d9-4096-8cb0-bdf9f5ac480d",
 						"exec": [
 							""
 						],
@@ -722,7 +727,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "d612e0a8-545f-4fa4-a5ec-6553d9e5a141",
+						"id": "b919260e-bd14-4547-97a3-fade6d0f4e96",
 						"exec": [
 							"/* TESTCASES TO EXECUTE */",
 							"/* */",
